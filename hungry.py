@@ -8,7 +8,7 @@ import getpass
 import gnupg
 from subprocess import Popen, PIPE
 
-email_to = "oc243@cl.cam.ac.uk"
+email_to = "dtg-lab@cl.cam.ac.uk"
 
 email_body = """
 Hello,

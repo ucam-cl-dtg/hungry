@@ -1,0 +1,11 @@
+Digitial Technology Group
+Hungry v0,01
+
+Script for sending GPG-signed emails to the group, letting them sign up for DTG
+pizza lunch.
+
+Prerequisites
+-------------
+
+ * apt-get install python-{jinja2,gnupg} gnupg{,2}
+ 

@@ -26,7 +26,7 @@ including the entire line, as we need this for accounts. {% endif %}
 {% if menu_warnings %}
 {{ menu_warnings }}
 {% endif %}
-We shall dine in {{location}} at {{time}}.
+We shall dine in {{ location }} at {{ date }} {{ time }}.
 
 See you on Friday
 
@@ -76,6 +76,8 @@ def main():
                         in vegetarian meals.""")
     parser.add_argument("--location", default="SN08", help="""Where we shall
                         be dining.""")
+    parser.add_argument("--date", default=datetime.date.isoformat(next_friday()),
+                        help="""ISO8601 formatted date of the *meeting*""")
     parser.add_argument("--time", default="12:30", help="""Time that we shall
                         dine.""")
     parser.add_argument("--guests", help="""Email address of any guests to

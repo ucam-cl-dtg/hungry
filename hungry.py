@@ -85,7 +85,10 @@ def main():
     args.name = getpass.getuser()
     template = Template(email_body)
     body = template.render(vars(args))
-    send_mail(body, cc=args.guests)
+    if args.mail:
+        send_mail(body, cc=args.guests)
+    else:
+        print body
 
 if __name__ == "__main__":
     main()

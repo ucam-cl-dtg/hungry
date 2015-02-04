@@ -23,6 +23,8 @@ cooked by {{ supplier_name }}.
 Please sign up on the {{ poll_type }} [0], indicating your choice of meat, or
 vegetarian food. {% if menu_link %} Please enter your choice from the menu [1],
 including the entire line, as we need this for accounts. {% endif %}
+
+The deadline for signups is {{ deadline }}
 {% if menu_warnings %}
 {{ menu_warnings }}
 {% endif %}
@@ -80,6 +82,8 @@ def main():
                         help="""ISO8601 formatted date of the *meeting*""")
     parser.add_argument("--time", default="12:30", help="""Time that we shall
                         dine.""")
+    parser.add_argument("--deadline", default="%s 09:00" %
+                        datetime.date.isoformat(next_friday()))
     parser.add_argument("--guests", help="""Email address of any guests to
                         invite.""")
     parser.add_argument("--mail", "-m", action="store_true", help="Send email.")

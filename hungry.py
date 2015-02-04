@@ -83,7 +83,8 @@ def main():
     parser.add_argument("--time", default="12:30", help="""Time that we shall
                         dine.""")
     parser.add_argument("--deadline", default="%s 09:00" %
-                        datetime.date.isoformat(next_friday()))
+                        datetime.date.isoformat(next_friday()), help="""The
+                        deadline for signing up for the *meeting*.""")
     parser.add_argument("--guests", help="""Email address of any guests to
                         invite.""")
     parser.add_argument("--mail", "-m", action="store_true", help="Send email.")

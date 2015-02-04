@@ -2,44 +2,95 @@
 
 import argparse
 import datetime
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from jinja2 import Template
+from jinja2 import Template, Environment
 import getpass
 import gnupg
+import html2text
 from subprocess import Popen, PIPE
 
 email_to = "dtg-lab@cl.cam.ac.uk"
 
 email_body = """
-Hello,
-{% if organiser_names %} This week, {{ organiser_names }} are
+<html>
+  <body>
+    <script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "FoodEstablishmentReservation",
+      "reservationNumber" : "DTG pizza *meeting*",
+      "reservationFor" : {
+        "@type" : "FoodEstablishment",
+        "name" : "{{ location }}",
+        "url" : "https://www.cl.cam.ac.uk/research/dtg/openroommap/static/?h={{ location }}",
+        "telephone": "+44 (0)1223 763500",
+        "address" : {
+          "@type" : "PostalAddress",
+          "streetAddress" : "William Gates Building, 15 JJ Thompson Avenue",
+          "addressLocality" : "Cambridge",
+          "addressRegion" : "Cambs",
+          "addressCountry" : "UK",
+          "postalCode" : "CB3 0FD"
+        }
+      },
+      "modifyReservationUrl" : "{{ poll_link }}",
+      "startTime" : "{{ date }}:{{ time }}",
+      "reservationStatus": "Unconfirmed",
+      "underName": "Prof. Hopper",
+      "action": [
+        {
+          "@type": "RsvpAction",
+          "handler": {
+            "@type": "HttpActionHandler",
+            "url": "{{ poll_link }}"
+          },
+          "attendance": "http://schema.org/RsvpAttendance/Yes"
+        },
+        {
+          "@type": "RsvpAction",
+          "handler": {
+            "@type": "HttpActionHandler",
+            "url": "{{ poll_link }}"
+          },
+          "attendance": "http://schema.org/RsvpAttendance/No"
+        }
+      ]
+    }
+    </script>
+<p>Hello,
+{% if organiser_names %}<br />This week, {{ organiser_names }} are
 organising DTG pizza.
 
-{% endif %}
-This week, as in previous weeks, we shall be having a lunch *meeting*
+{% endif %}</p>
+<p>This week, as in previous weeks, we shall be having a pizza *meeting*
 courtesy of Prof. Hopper. This week we shall be eating {{ food_type }}
-cooked by {{ supplier_name }}.
+cooked by {{ supplier_name }}.</p>
 
-Please sign up on the {{ poll_type }} [0], indicating your choice of meat, or
+<p>Please sign up on the {{ poll_type }} [0], indicating your choice of meat, or
 vegetarian food. {% if menu_link %} Please enter your choice from the menu [1],
-including the entire line, as we need this for accounts. {% endif %}
+including the entire line, as we need this for accounts. {% endif %}</p>
 
-The deadline for signups is {{ deadline }}
+<p>The deadline for signups is {{ deadline }}
 {% if menu_warnings %}
-{{ menu_warnings }}
+</p><p>{{ menu_warnings }}</p><p>
 {% endif %}
-We shall dine in {{ location }} at {{ date }} {{ time }}.
+We shall dine in {{ location }} at {{ date }} {{ time }}.</p>
 
-See you on Friday
+<p>See you on Friday</p>
 
 
-{{ name }}
+<p>{{ name }}</p>
 
-[0] {{ poll_link }}
+<p>[0] {{ poll_link }}<br />
 {% if menu_link %}
 [1] {{ menu_link }}
-{% endif %}
+{% endif %}</p>
+</body>
+</html>
 """
+
+gpg_passphrase = None
 
 def next_friday():
     today = datetime.date.today()
@@ -47,18 +98,24 @@ def next_friday():
     return friday
 
 def sign_string(string):
+    global gpg_passphrase
     gpg = gnupg.GPG()
-    gpg_passphrase = getpass.getpass("GPG passphrase: ")
-    return  gpg.sign(string, passphrase=gpg_passphrase)
+    if not gpg_passphrase:
+        gpg_passphrase = getpass.getpass("GPG passphrase: ")
+    return  str(gpg.sign(string, passphrase=gpg_passphrase))
 
 def send_mail(body, to=email_to, cc=""):
-    signed_body = sign_string(body)
-    msg = MIMEText(str(signed_body))
+    msg = MIMEMultipart('alternative')
     msg["To"] = to
     msg["Cc"] = cc
     msg["Subject"] = "DTG pizza Friday *meeting* (%s)" % datetime.date.isoformat(
         next_friday())
-    p = Popen(["/usr/sbin/sendmail", "-t"], stdin=PIPE)
+    part1 = MIMEText(sign_string(html2text.html2text(body)), 'plain')
+    part2 = MIMEText(body, 'html')
+    msg.attach(part1)
+    msg.attach(part2)
+
+    p = Popen(["/usr/sbin/sendmail", "-t", "-f dtg-infra@cl.cam.ac.uk"], stdin=PIPE)
     p.communicate(msg.as_string())
 
 

@@ -10,7 +10,7 @@ import gnupg
 import html2text
 from subprocess import Popen, PIPE
 
-email_to = "dtg-lab@cl.cam.ac.uk"
+email_to_default = "dtg-lab@cl.cam.ac.uk"
 
 email_body = """
 <html>
@@ -71,7 +71,7 @@ cooked by {{ supplier_name }}.</p>
 vegetarian food. {% if menu_link %} Please enter your choice from the menu [<a href="{{ menu_link }}">1</a>],
 including the entire line, as we need this for accounts. {% endif %}</p>
 
-<p>The deadline for signups is {{ deadline }}
+<p>The deadline for signups is {{ deadline }}.
 {% if menu_warnings %}
 </p><p>{{ menu_warnings }}</p><p>
 {% endif %}
@@ -104,7 +104,7 @@ def sign_string(string):
         gpg_passphrase = getpass.getpass("GPG passphrase: ")
     return  str(gpg.sign(string, passphrase=gpg_passphrase))
 
-def send_mail(body, to=email_to, cc=""):
+def send_mail(body, to=email_to_default, cc=""):
     msg = MIMEMultipart('alternative')
     msg["To"] = to
     msg["Cc"] = cc
@@ -144,13 +144,15 @@ def main():
                         deadline for signing up for the *meeting*.""")
     parser.add_argument("--guests", help="""Email address of any guests to
                         invite.""")
+    parser.add_argument("--email_to", default=email_to_default,
+                        help="""Receipient email address""")
     parser.add_argument("--mail", "-m", action="store_true", help="Send email.")
     args = parser.parse_args()
     args.name = getpass.getuser()
     template = Template(email_body)
     body = template.render(vars(args))
     if args.mail:
-        send_mail(body, cc=args.guests)
+        send_mail(body, to=args.email_to, cc=args.guests)
     else:
         print body
 

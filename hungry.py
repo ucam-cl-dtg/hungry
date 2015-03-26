@@ -67,8 +67,8 @@ organising DTG pizza.
 courtesy of Prof. Hopper. This week we shall be eating {{ food_type }}
 cooked by {{ supplier_name }}.</p>
 
-<p>Please sign up on the {{ poll_type }} [0], indicating your choice of meat, or
-vegetarian food. {% if menu_link %} Please enter your choice from the menu [1],
+<p>Please sign up on the {{ poll_type }} [<a href="{{ poll_link }}">0</a>], indicating your choice of meat, or
+vegetarian food. {% if menu_link %} Please enter your choice from the menu [<a href="{{ menu_link }}">1</a>],
 including the entire line, as we need this for accounts. {% endif %}</p>
 
 <p>The deadline for signups is {{ deadline }}
@@ -82,9 +82,9 @@ We shall dine in {{ location }} at {{ date }} {{ time }}.</p>
 
 <p>{{ name }}</p>
 
-<p>[0] {{ poll_link }}<br />
+<p>[0] <a href="{{ poll_link }}">{{ poll_link }}</a><br />
 {% if menu_link %}
-[1] {{ menu_link }}
+[1] <a href="{{ menu_link }}">{{ menu_link }}</a>
 {% endif %}</p>
 </body>
 </html>

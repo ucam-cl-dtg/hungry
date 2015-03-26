@@ -110,7 +110,9 @@ def send_mail(body, to=email_to_default, cc=""):
     msg["Cc"] = cc
     msg["Subject"] = "DTG pizza Friday *meeting* (%s)" % datetime.date.isoformat(
         next_friday())
-    part1 = MIMEText(sign_string(html2text.html2text(body)), 'plain')
+    h = html2text.HTML2Text()
+    h.ignore_links = True
+    part1 = MIMEText(sign_string(h.handle(body)), 'plain')
     part2 = MIMEText(body, 'html')
     msg.attach(part1)
     msg.attach(part2)

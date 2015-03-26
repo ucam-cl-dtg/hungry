@@ -71,7 +71,7 @@ cooked by {{ supplier_name }}.</p>
 vegetarian food. {% if menu_link %} Please enter your choice from the menu [<a href="{{ menu_link }}">1</a>],
 including the entire line, as we need this for accounts. {% endif %}</p>
 
-<p>The deadline for signups is {{ deadline }}
+<p>The deadline for signups is {{ deadline }}.
 {% if menu_warnings %}
 </p><p>{{ menu_warnings }}</p><p>
 {% endif %}

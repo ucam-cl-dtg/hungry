@@ -117,7 +117,8 @@ def send_mail(body, to=email_to_default, cc=""):
     msg.attach(part1)
     msg.attach(part2)
 
-    p = Popen(["/usr/sbin/sendmail", "-t", "-f dtg-infra@cl.cam.ac.uk"], stdin=PIPE)
+    p = Popen(["/usr/sbin/sendmail", "-t",
+               "-f %s@cl.cam.ac.uk" % getpass.getuser()], stdin=PIPE)
     p.communicate(msg.as_string())
 
 

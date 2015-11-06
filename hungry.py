@@ -75,7 +75,7 @@ including the entire line, as we need this for accounts. {% endif %}</p>
 {% if menu_warnings %}
 </p><p>{{ menu_warnings }}</p><p>
 {% endif %}
-We shall dine in {{ location }} at {{ date }} {{ time }}.</p>
+We shall dine in {{ location }} at {{ date }} {{ time }}&#177;30 minutes.</p>
 
 <p>See you on Friday</p>
 
